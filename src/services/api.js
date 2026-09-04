@@ -1,19 +1,33 @@
 const BASE_URL = 'http://localhost:8083/api';
 
+async function request(path, options = {}) {
+  const response = await fetch(`${BASE_URL}${path}`, {
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+    ...options,
+  });
+
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : null;
+
+  if (!response.ok) {
+    const message = data?.message || data?.error || 'Erro ao realizar a operação.';
+    throw new Error(message);
+  }
+
+  return data;
+}
+
 export async function get(path) {
-  const res = await fetch(`${BASE_URL}${path}`);
-  return res.json();
+  return request(path, { method: 'GET' });
 }
 
 export async function post(path, body) {
-  const res = await fetch(`${BASE_URL}${path}`, {
+  return request(path, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  return res.json();
 }
 
 export async function del(path) {
-  await fetch(`${BASE_URL}${path}`, { method: 'DELETE' });
+  return request(path, { method: 'DELETE' });
 }

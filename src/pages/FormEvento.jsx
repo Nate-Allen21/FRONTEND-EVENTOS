@@ -5,20 +5,37 @@ import { post } from '../services/api'
 export default function FormEvento() {
   const navigate = useNavigate()
   const [form, setForm] = useState({ nome: '', descricao: '', dataEvento: '', local: '', vagasTotais: 10 })
+  const [erro, setErro] = useState('')
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    post('/eventos', form).then(() => navigate('/eventos'))
+    setErro('')
+
+    if (!form.nome || !form.local || !form.dataEvento || !form.vagasTotais) {
+      setErro('Preencha nome, local, data e quantidade de vagas.')
+      return
+    }
+
+    try {
+      await post('/eventos', {
+        ...form,
+        vagasTotais: Number(form.vagasTotais),
+      })
+      navigate('/eventos')
+    } catch (err) {
+      setErro(err.message || 'Não foi possível cadastrar o evento.')
+    }
   }
 
   return (
     <div>
       <h1>Novo Evento</h1>
       <form className="card" onSubmit={handleSubmit}>
+        {erro && <p style={{ color: 'crimson', marginBottom: 12 }}>{erro}</p>}
         <div className="field">
           <label>Nome</label>
           <input name="nome" value={form.nome} onChange={handleChange} />
@@ -37,7 +54,7 @@ export default function FormEvento() {
         </div>
         <div className="field">
           <label>Vagas totais</label>
-          <input type="number" name="vagasTotais" value={form.vagasTotais} onChange={handleChange} />
+          <input type="number" name="vagasTotais" min="1" value={form.vagasTotais} onChange={handleChange} />
         </div>
         <button type="submit">Criar evento</button>
       </form>
