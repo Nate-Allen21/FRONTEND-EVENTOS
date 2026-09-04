@@ -1,4 +1,15 @@
-const BASE_URL = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:8083/api' : '/api');
+const normalizeBaseUrl = (value) => {
+  if (!value) return value;
+  return value.endsWith('/api') ? value : `${value.replace(/\/+$/, '')}/api`;
+};
+
+const BASE_URL = normalizeBaseUrl(
+  import.meta.env.VITE_API_URL || (
+    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:8083'
+      : 'https://eventos-backend.onrender.com'
+  )
+);
 
 async function request(path, options = {}) {
   const response = await fetch(`${BASE_URL}${path}`, {
