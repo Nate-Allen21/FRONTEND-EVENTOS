@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { post } from '../services/api'
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, onNotify }) {
   const navigate = useNavigate()
   const [modo, setModo] = useState('login')
   const [form, setForm] = useState({ nome: '', email: 'admin@eventos.com', senha: 'admin123', perfil: 'ADMIN' })
@@ -33,6 +33,7 @@ export default function Login({ onLogin }) {
 
       localStorage.setItem('eventos-user', JSON.stringify(usuario))
       onLogin(usuario)
+      onNotify?.(`Login realizado: ${usuario.nome || usuario.email}`)
       navigate('/')
     } catch (err) {
       setErro(err.message || 'Não foi possível realizar a operação.')

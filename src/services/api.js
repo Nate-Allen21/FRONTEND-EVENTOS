@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8083/api';
+const BASE_URL = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:8083/api' : '/api');
 
 async function request(path, options = {}) {
   const response = await fetch(`${BASE_URL}${path}`, {
@@ -25,6 +25,13 @@ export async function post(path, body) {
   return request(path, {
     method: 'POST',
     body: JSON.stringify(body),
+  });
+}
+
+export async function put(path, body) {
+  return request(path, {
+    method: 'PUT',
+    body: body ? JSON.stringify(body) : undefined,
   });
 }
 

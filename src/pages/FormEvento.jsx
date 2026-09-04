@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { post } from '../services/api'
 
-export default function FormEvento() {
+export default function FormEvento({ onNotify }) {
   const navigate = useNavigate()
   const [form, setForm] = useState({ nome: '', descricao: '', dataEvento: '', local: '', vagasTotais: 10 })
   const [erro, setErro] = useState('')
@@ -25,6 +25,7 @@ export default function FormEvento() {
         ...form,
         vagasTotais: Number(form.vagasTotais),
       })
+      onNotify?.(`Evento criado: ${form.nome}`)
       navigate('/eventos')
     } catch (err) {
       setErro(err.message || 'Não foi possível cadastrar o evento.')
